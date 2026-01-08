@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailorPro - Measurement Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#1e40af',
+                        accent: '#f59e0b',
+                        dark: '#1f2937'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-cutlery text-primary text-2xl"></i>
+                <h1 class="text-2xl font-bold text-dark">Tailor<span class="text-primary">Pro</span></h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <button onclick="showPage('dashboard')" class="text-dark hover:text-primary font-medium transition-colors">Dashboard</button>
+                <button onclick="showPage('measurements')" class="text-dark hover:text-primary font-medium transition-colors">Measurements</button>
+                <button onclick="showPage('customers')" class="text-dark hover:text-primary font-medium transition-colors">Customers</button>
+                <button onclick="showPage('reports')" class="text-dark hover:text-primary font-medium transition-colors">Reports</button>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                    <i class="fas fa-user mr-2"></i> Admin
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard Page -->
+        <section id="dashboard" class="page">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-dark mb-2">Dashboard Overview</h2>
+                <p class="text-gray-600">Welcome back! Here's what's happening today.</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-500 text-sm">Total Customers</p>
+                            <p class="text-3xl font-bold text-dark mt-1">142</p>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fas fa-users text-primary text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-green-500 text-sm flex items-center">
+                            <i class="fas fa-arrow-up mr-1"></i> 12% from last month
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-500 text-sm">Measurements Today</p>
+                            <p class="text-3xl font-bold text-dark mt-1">24</p>
+                        </div>
+                        <div class="bg-yellow-100 p-3 rounded-full">
+                            <i class="fas fa-ruler-combined text-accent text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-green-500 text-sm flex items-center">
+                            <i class="fas fa-arrow-up mr-1"></i> 8% from yesterday
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-500 text-sm">Pending Orders</p>
+                            <p class="text-3xl font-bold text-dark mt-1">8</p>
+                        </div>
+                        <div class="bg-red-100 p-3 rounded-full">
+                            <i class="fas fa-clock text-red-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-red-500 text-sm flex items-center">
+                            <i class="fas fa-arrow-down mr-1"></i> 3 from yesterday
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-500 text-sm">Revenue</p>
+                            <p class="text-3xl font-bold text-dark mt-1">$2,840</p>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-dollar-sign text-green-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-green-500 text-sm flex items-center">
+                            <i class="fas fa-arrow-up mr-1"></i> 15% from last week
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold text-dark mb-4">Recent Measurements</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-dark">John Smith</div>
+                                                <div class="text-sm text-gray-500">john@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-15</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-primary hover:text-secondary mr-3">View</button>
+                                        <button class="text-gray-500 hover:text-gray-700">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-dark">Emily Johnson</div>
+                                                <div class="text-sm text-gray-500">emily@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-14</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">In Progress</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-primary hover:text-secondary mr-3">View</button>
+                                        <button class="text-gray-500 hover:text-gray-700">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-dark">Michael Brown</div>
+                                                <div class="text-sm text-gray-500">michael@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-13</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Scheduled</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-primary hover:text-secondary mr-3">View</button>
+                                        <button class="text-gray-500 hover:text-gray-700">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold text-dark mb-4">Quick Actions</h3>
+                    <div class="space-y-4">
+                        <button onclick="showPage('measurements')" class="w-full bg-primary hover:bg-secondary text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i class="fas fa-plus-circle mr-2"></i> New Measurement
+                        </button>
+                        <button class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-dark py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i class="fas fa-user-plus mr-2"></i> Add Customer
+                        </button>
+                        <button class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-dark py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i class="fas fa-file-invoice mr-2"></i> Create Invoice
+                        </button>
+                        <button class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-dark py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i class="fas fa-calendar-check mr-2"></i> Schedule Appointment
+                        </button>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-dark mt-6 mb-4">Upcoming Tasks</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="h-2 w-2 bg-primary rounded-full"></div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-dark">Measure John Smith</p>
+                                <p class="text-xs text-gray-500">Today, 2:00 PM</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="h-2 w-2 bg-primary rounded-full"></div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-dark">Prepare invoice for Emily</p>
+                                <p class="text-xs text-gray-500">Tomorrow, 10:00 AM</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="h-2 w-2 bg-primary rounded-full"></div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-dark">Update customer records</p>
+                                <p class="text-xs text-gray-500">June 18, 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Measurements Page -->
+        <section id="measurements" class="page hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-dark mb-2">Measurement Records</h2>
+                <p class="text-gray-600">Manage and view all customer measurements</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-dark">Add New Measurement</h3>
+                        <p class="text-gray-600">Enter customer details and measurements</p>
+                    </div>
+                    <button onclick="showPage('dashboard')" class="mt-4 md:mt-0 bg-gray-100 hover:bg-gray-200 text-dark py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+                    </button>
+                </div>
+
+                <form id="measurementForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Customer Name *</label>
+                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter full name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                        <input type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter phone number">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter email address">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                        <input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <h4 class="font-medium text-dark mb-3">Body Measurements</h4>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Chest *</label>
+                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Waist *</label>
+                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hip *</label>
+                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sleeve Length *</label>
+                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Shoulder Width *</label>
+                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Length *</label>
+                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                        <textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="3" placeholder="Additional notes about the measurement..."></textarea>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <div class="flex justify-end space-x-4">
+                            <button type="button" onclick="showPage('dashboard')" class="px-6 py-2 border border-gray-300 text-dark rounded-lg hover:bg-gray-50 transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-6 py-2 bg-primary hover:bg-secondary text-white rounded-lg transition-colors">
+                                Save Measurement
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Customers Page -->
+        <section id="customers" class="page hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-dark mb-2">Customer Management</h2>
+                <p class="text-gray-600">View and manage all customers</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-dark">All Customers</h3>
+                        <p class="text-gray-600">List of registered customers</p>
+                    </div>
+                    <button class="mt-4 md:mt-0 bg-primary hover:bg-secondary text-white py-2 px-4 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Add Customer
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Measurement</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-dark">John Smith</div>
+                                            <div class="text-sm text-gray-500">john@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div>+1 (555) 123-4567</div>
+                                    <div class="text-gray-400">johnsmith@gmail.com</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-15</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-primary hover:text-secondary mr-3">View</button>
+                                    <button class="text-gray-500 hover:text-gray-700">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-dark">Emily Johnson</div>
+                                            <div class="text-sm text-gray-500">emily@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div>+1 (555) 234-5678</div>
+                                    <div class="text-gray-400">ejohnson@yahoo.com</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-14</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-primary hover:text-secondary mr-3">View</button>
+                                    <button class="text-gray-500 hover:text-gray-700">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-dark">Michael Brown</div>
+                                            <div class="text-sm text-gray-500">michael@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div>+1 (555) 345-6789</div>
+                                    <div class="text-gray-400">m.brown@company.com</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-13</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Inactive</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-primary hover:text-secondary mr-3">View</button>
+                                    <button class="text-gray-500 hover:text-gray-700">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Page -->
+        <section id="reports" class="page hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-dark mb-2">Reports & Analytics</h2>
+                <p class="text-gray-600">View detailed analytics and reports</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold text-dark mb-4">Measurement Trends</h3>
+                    <div class="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+                        <p class="text-gray-500">Chart visualization would appear here</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold text-dark mb-4">Customer Distribution</h3>
+                    <div class="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+                        <p class="text-gray-500">Chart visualization would appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-xl font-bold text-dark mb-4">Export Data</h3>
+                <div class="flex flex-wrap gap-4">
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-file-excel mr-2"></i> Export to Excel
+                    </button>
+                    <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-file-pdf mr-2"></i> Export to PDF
+                    </button>
+                    <button class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-file-csv mr-2"></i> Export to CSV
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-cutlery text-primary text-2xl"></i>
+                        <h2 class="text-xl font-bold">Tailor<span class="text-primary">Pro</span></h2>
+                    </div>
+                    <p class="text-gray-400 mt-2">Professional measurement management system</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 TailorPro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Show/hide pages
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            // Update active nav item (if needed)
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('text-primary');
+            });
+            
+            if (pageId !== 'dashboard') {
+                const navBtn = Array.from(document.querySelectorAll('nav button')).find(btn => 
+                    btn.onclick.toString().includes(pageId)
+                );
+                if (navBtn) {
+                    navBtn.classList.add('text-primary');
+                }
+            }
+        }
+
+        // Initialize with dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('dashboard');
+            
+            // Form submission handling
+            document.getElementById('measurementForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Measurement saved successfully!');
+                this.reset();
+            });
+        });
+    </script>
+</body>
+</html>

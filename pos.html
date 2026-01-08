@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoreFlow POS - Professional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        surface: '#ffffff',
+                        background: '#f3f4f6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar for Cart */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #d1d5db; 
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af; 
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* Toast Notification */
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 50;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+    </style>
+</head>
+<body class="bg-background text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-surface shadow-sm border-b z-20 shrink-0">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo -->
+                <div class="flex items-center gap-8">
+                    <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="location.reload()">
+                        <div class="bg-primary/10 p-2 rounded-lg mr-2">
+                            <i class="fas fa-layer-group text-primary text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold text-dark tracking-tight">StoreFlow<span class="text-primary">POS</span></span>
+                    </div>
+                    
+                    <!-- Search Bar -->
+                    <div class="hidden md:block relative w-96">
+                        <input type="text" id="searchInput" placeholder="Search products by name or SKU..." 
+                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-sm">
+                        <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- User Profile -->
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-semibold text-dark">Sarah Jenkins</p>
+                        <p class="text-xs text-gray-500">Manager</p>
+                    </div>
+                    <img class="h-10 w-10 rounded-full border-2 border-white shadow-sm" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="User">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Left Side: Product Catalog -->
+        <main class="flex-1 overflow-y-auto p-6 custom-scroll bg-gray-50" id="main-content">
+            
+            <!-- Categories -->
+            <div class="flex gap-3 mb-6 overflow-x-auto pb-2 scrollbar-hide" id="category-filters">
+                <button onclick="filterProducts('all')" class="category-btn active px-4 py-2 rounded-full bg-dark text-white text-sm font-medium shadow-lg transition-all">All Items</button>
+                <button onclick="filterProducts('electronics')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 text-sm font-medium transition-all">Electronics</button>
+                <button onclick="filterProducts('accessories')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 text-sm font-medium transition-all">Accessories</button>
+                <button onclick="filterProducts('clothing')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 text-sm font-medium transition-all">Clothing</button>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <!-- Products will be injected here by JS -->
+            </div>
+        </main>
+
+        <!-- Right Side: Cart & Checkout -->
+        <aside class="w-full md:w-[400px] bg-surface border-l shadow-xl flex flex-col h-full z-10">
+            <!-- Cart Header -->
+            <div class="p-5 border-b flex justify-between items-center bg-white">
+                <div>
+                    <h2 class="text-lg font-bold text-dark">Current Order</h2>
+                    <p class="text-xs text-gray-500" id="order-id">#ORD-2023-001</p>
+                </div>
+                <button onclick="clearCart()" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors text-sm font-medium">
+                    <i class="fas fa-trash-alt mr-1"></i> Clear
+                </button>
+            </div>
+
+            <!-- Cart Items (Scrollable) -->
+            <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll bg-gray-50/50">
+                <!-- Cart items injected here -->
+                <div id="empty-cart-msg" class="h-full flex flex-col items-center justify-center text-gray-400 opacity-60">
+                    <i class="fas fa-shopping-basket text-6xl mb-4"></i>
+                    <p class="text-sm">No items added yet</p>
+                </div>
+            </div>
+
+            <!-- Checkout Section (Fixed at bottom) -->
+            <div class="bg-surface p-5 border-t shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+                <div class="space-y-2 mb-4 text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal</span>
+                        <span id="subtotal-price">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Tax (10%)</span>
+                        <span id="tax-price">$0.00</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-xl text-dark pt-2 border-t mt-2">
+                        <span>Total</span>
+                        <span id="total-price" class="text-primary">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 mb-4">
+                    <button class="p-2 border rounded hover:bg-gray-50 flex flex-col items-center justify-center text-xs text-gray-600 gap-1 active:scale-95 transition">
+                        <i class="fas fa-money-bill text-green-600 text-lg"></i> Cash
+                    </button>
+                    <button class="p-2 border rounded hover:bg-gray-50 flex flex-col items-center justify-center text-xs text-gray-600 gap-1 active:scale-95 transition">
+                        <i class="far fa-credit-card text-blue-600 text-lg"></i> Card
+                    </button>
+                    <button class="p-2 border rounded hover:bg-gray-50 flex flex-col items-center justify-center text-xs text-gray-600 gap-1 active:scale-95 transition">
+                        <i class="fab fa-apple text-dark text-lg"></i> Pay
+                    </button>
+                    <button class="p-2 border rounded hover:bg-gray-50 flex flex-col items-center justify-center text-xs text-gray-600 gap-1 active:scale-95 transition">
+                        <i class="fas fa-ellipsis-h text-gray-400 text-lg"></i> Other
+                    </button>
+                </div>
+
+                <button onclick="processPayment()" id="pay-btn" class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl transition duration-300 shadow-lg shadow-blue-500/30 flex justify-between items-center group disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="text-lg">Charge</span>
+                    <span class="bg-blue-600 px-3 py-1 rounded-lg group-hover:bg-blue-500 transition" id="pay-btn-amount">$0.00</span>
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="modal-content">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check text-4xl text-green-500"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h2>
+            <p class="text-gray-500 mb-6">Transaction ID: <span class="font-mono text-sm text-gray-800">#TRX-8932</span></p>
+            <div class="border-t border-b py-4 mb-6">
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-600">Amount Paid</span>
+                    <span class="font-bold text-gray-800" id="modal-total">$0.00</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Change Due</span>
+                    <span class="font-bold text-gray-800">$0.00</span>
+                </div>
+            </div>
+            <button onclick="closeModal()" class="w-full bg-gray-900 text-white py-3 rounded-xl font-medium hover:bg-gray-800 transition">Start New Order</button>
+            <button class="mt-4 text-primary text-sm font-medium hover:underline"><i class="fas fa-print mr-1"></i> Print Receipt</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast shadow-lg">Item added to cart</div>
+
+    <script>
+        // --- Data ---
+        const products = [
+            { id: 1, name: "Sony WH-1000XM5", category: "electronics", price: 349.00, stock: 12, image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=300&q=80" },
+            { id: 2, name: "Apple Watch Series 8", category: "electronics", price: 399.00, stock: 8, image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=300&q=80" },
+            { id: 3, name: "Mechanical Keyboard", category: "accessories", price: 129.50, stock: 24, image: "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=300&q=80" },
+            { id: 4, name: "Nike Air Max", category: "clothing", price: 145.00, stock: 5, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=300&q=80" },
+            { id: 5, name: "Canon EOS R6", category: "electronics", price: 2499.00, stock: 2, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=300&q=80" },
+            { id: 6, name: "Leather Backpack", category: "accessories", price: 89.99, stock: 15, image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=300&q=80" },
+            { id: 7, name: "Cotton Hoodie", category: "clothing", price: 45.00, stock: 30, image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=300&q=80" },
+            { id: 8, name: "USB-C Hub", category: "accessories", price: 35.00, stock: 50, image: "https://images.unsplash.com/photo-1625244514788-e215354e7d44?auto=format&fit=crop&w=300&q=80" },
+        ];
+
+        let cart = [];
+        let currentCategory = 'all';
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(products);
+            updateCartUI();
+            
+            // Search Listener
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+                renderProducts(filtered);
+            });
+        });
+
+        // --- Logic ---
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+        }
+
+        function renderProducts(items) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+
+            items.forEach(product => {
+                const stockColor = product.stock < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
+                const stockText = product.stock < 10 ? 'Low Stock' : 'In Stock';
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group animate-fade-in';
+                card.onclick = () => addToCart(product.id);
+                
+                card.innerHTML = `
+                    <div class="h-40 overflow-hidden relative">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="font-semibold text-gray-800 text-lg leading-tight">${product.name}</h3>
+                                <p class="text-xs text-gray-500 capitalize mt-1">${product.category}</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mt-3">
+                            <span class="font-bold text-primary text-lg">${formatCurrency(product.price)}</span>
+                            <span class="${stockColor} text-xs font-medium px-2 py-1 rounded-full">${stockText}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterProducts(category) {
+            currentCategory = category;
+            
+            // Update UI buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if(btn.textContent.toLowerCase().includes(category === 'all' ? 'all' : category)) {
+                    btn.classList.remove('bg-white', 'text-gray-600');
+                    btn.classList.add('bg-dark', 'text-white', 'shadow-lg');
+                } else {
+                    btn.classList.add('bg-white', 'text-gray-600');
+                    btn.classList.remove('bg-dark', 'text-white', 'shadow-lg');
+                }
+            });
+
+            if (category === 'all') {
+                renderProducts(products);
+            } else {
+                renderProducts(products.filter(p => p.category === category));
+            }
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existingItem = cart.find(item => item.id === id);
+
+            if (existingItem) {
+                existingItem.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            
+            updateCartUI();
+            showToast(`Added ${product.name} to cart`);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        function updateQty(id, change) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) removeFromCart(id);
+                else updateCartUI();
+            }
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const emptyMsg = document.getElementById('empty-cart-msg');
+            
+            if (cart.length === 0) {
+                container.innerHTML = '';
+                container.appendChild(emptyMsg);
+                emptyMsg.style.display = 'flex';
+                updateTotals();
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+            container.innerHTML = '';
+
+            cart.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'bg-white p-3 rounded-xl border border-gray-100 flex justify-between items-center shadow-sm animate-fade-in';
+                el.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover bg-gray-100">
+                        <div>
+                            <h4 class="font-semibold text-sm text-gray-800 line-clamp-1">${item.name}</h4>
+                            <p class="text-primary font-bold text-sm">${formatCurrency(item.price)}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center bg-gray-100 rounded-lg">
+                            <button onclick="updateQty(${item.id}, -1)" class="px-2 py-1 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-l-lg transition">-</button>
+                            <span class="text-sm font-medium w-6 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${item.id}, 1)" class="px-2 py-1 text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-r-lg transition">+</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+
+            updateTotals();
+        }
+
+        function updateTotals() {
+            const subtotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const tax = subtotal * 0.10; // 10% tax
+            const total = subtotal + tax;
+
+            document.getElementById('subtotal-price').textContent = formatCurrency(subtotal);
+            document.getElementById('tax-price').textContent = formatCurrency(tax);
+            document.getElementById('total-price').textContent = formatCurrency(total);
+            document.getElementById('pay-btn-amount').textContent = formatCurrency(total);
+            document.getElementById('modal-total').textContent = formatCurrency(total);
+
+            const payBtn = document.getElementById('pay-btn');
+            if (cart.length === 0) {
+                payBtn.disabled = true;
+                payBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                payBtn.disabled = false;
+                payBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function clearCart() {
+            if(confirm('Are you sure you want to clear the cart?')) {
+                cart = [];
+                updateCartUI();
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = "toast show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // --- Payment Modal Logic ---
+        function processPayment() {
+            if (cart.length === 0) return;
+
+            // Generate Random Order ID
+            const orderId = '#ORD-' + Math.floor(Math.random() * 100000);
+            document.getElementById('order-id').innerText = orderId;
+
+            const modal = document.getElementById('payment-modal');
+            const content = document.getElementById('modal-content');
+            
+            modal.classList.remove('hidden');
+            // Small delay for transition
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('payment-modal');
+            const content = document.getElementById('modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                cart = [];
+                updateCartUI();
+            }, 300);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bella Spa - Luxury Wellness Experience. Book massages, facials, and body treatments.">
+    <title>Bella Spa - Luxury Wellness Experience</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons and Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        baboo: {
+                            primary: '#8B4513',   /* SaddleBrown */
+                            secondary: '#D2B48C', /* Tan */
+                            accent: '#F5DEB3',    /* Wheat */
+                            light: '#FFF8F0',     /* Very light off-white */
+                            dark: '#5D2906'       /* Dark Chocolate */
+                        }
+                    },
+                    fontFamily: {
+                        'dancing': ['"Dancing Script"', 'cursive'],
+                        'poppins': ['"Poppins"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF8F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D2B48C;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8B4513;
+        }
+
+        /* Hero Background with Parallax effect */
+        .hero-bg {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        /* Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hover Effects */
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(139, 69, 19, 0.15), 0 10px 10px -5px rgba(139, 69, 19, 0.1);
+        }
+        
+        .price-card {
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .price-card:hover {
+            border-color: #D2B48C;
+            transform: scale(1.03);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Floating Buttons */
+        .whatsapp-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #25D366;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        
+        .whatsapp-button:hover {
+            transform: scale(1.1);
+            background-color: #128C7E;
+            animation: none;
+        }
+        
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 99;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #8B4513;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+        
+        .scroll-to-top.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Section Styling */
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #8B4513;
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="font-poppins bg-baboo-light text-gray-700">
+
+    <!-- Navigation -->
+    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <a href="#" class="flex-shrink-0 flex items-center group">
+                        <i class="fas fa-spa text-baboo-primary text-3xl mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                        <span class="text-3xl font-bold text-baboo-primary font-dancing">Bella Spa</span>
+                    </a>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-gray-600 hover:text-baboo-primary font-medium transition relative group">Home
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-baboo-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#services" class="text-gray-600 hover:text-baboo-primary font-medium transition relative group">Services
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-baboo-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#pricing" class="text-gray-600 hover:text-baboo-primary font-medium transition relative group">Pricing
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-baboo-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#about" class="text-gray-600 hover:text-baboo-primary font-medium transition relative group">About
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-baboo-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#contact" class="bg-baboo-primary text-white px-5 py-2 rounded-full hover:bg-baboo-dark transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Book Now</a>
+                </div>
+                <!-- Mobile button -->
+                <div class="flex items-center md:hidden">
+                    <button id="mobile-menu-button" class="text-baboo-primary focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-lg">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="#home" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-baboo-light hover:text-baboo-primary">Home</a>
+                <a href="#services" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-baboo-light hover:text-baboo-primary">Services</a>
+                <a href="#pricing" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-baboo-light hover:text-baboo-primary">Pricing</a>
+                <a href="#about" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-baboo-light hover:text-baboo-primary">About</a>
+                <a href="#contact" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-baboo-primary font-bold">Book Appointment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg h-screen flex items-center justify-center relative">
+        <div class="relative z-10 text-center text-white px-4 max-w-4xl pt-16">
+            <span class="block text-xl md:text-2xl mb-4 font-dancing text-baboo-accent tracking-wider reveal">Rejuvenate Your Soul</span>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 reveal shadow-sm" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Welcome to Bella Spa</h1>
+            <p class="text-xl md:text-2xl mb-10 text-gray-100 font-light reveal delay-100">Experience luxury, tranquility, and expert care in the heart of the city.</p>
+            <div class="reveal delay-200 flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="scrollToSection('services')" class="bg-baboo-primary hover:bg-baboo-dark text-white font-semibold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105 shadow-lg border-2 border-transparent">
+                    View Services
+                </button>
+                <button onclick="scrollToSection('contact')" class="bg-transparent hover:bg-white hover:text-baboo-primary text-white font-semibold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105 border-2 border-white shadow-lg">
+                    Book Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 bg-white relative overflow-hidden">
+        <!-- Background decorative elements -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-baboo-accent opacity-20 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-baboo-secondary opacity-20 blur-3xl"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-5xl font-bold text-baboo-primary section-title font-dancing">Our Services</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Discover our range of premium spa treatments designed to relax your mind, body, and soul.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="service-card bg-baboo-light p-8 rounded-xl shadow-lg transition duration-300 border border-baboo-light reveal">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm mx-auto text-baboo-primary text-3xl">
+                        <i class="fas fa-hot-tub-person"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800 text-center">Hot Stone Massage</h3>
+                    <p class="text-gray-600 mb-6 text-center text-sm">Relaxing treatment using heated stones to soothe muscles and reduce stress deep within the tissues.</p>
+                    <div class="flex justify-between items-center border-t border-baboo-secondary/20 pt-4">
+                        <span class="text-lg font-bold text-baboo-primary">$95</span>
+                        <button onclick="openWhatsApp('Hot Stone Massage')" class="text-sm bg-baboo-primary text-white py-2 px-4 rounded-full hover:bg-baboo-dark transition shadow-md">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Service 2 -->
+                <div class="service-card bg-baboo-light p-8 rounded-xl shadow-lg transition duration-300 border border-baboo-light reveal">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm mx-auto text-baboo-primary text-3xl">
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800 text-center">Aromatherapy</h3>
+                    <p class="text-gray-600 mb-6 text-center text-sm">Inhale the healing power of essential oils to balance your emotions, improve sleep and boost energy.</p>
+                    <div class="flex justify-between items-center border-t border-baboo-secondary/20 pt-4">
+                        <span class="text-lg font-bold text-baboo-primary">$85</span>
+                        <button onclick="openWhatsApp('Aromatherapy Treatment')" class="text-sm bg-baboo-primary text-white py-2 px-4 rounded-full hover:bg-baboo-dark transition shadow-md">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Service 3 -->
+                <div class="service-card bg-baboo-light p-8 rounded-xl shadow-lg transition duration-300 border border-baboo-light reveal">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm mx-auto text-baboo-primary text-3xl">
+                        <i class="fas fa-mask-face"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800 text-center">Luxury Facial</h3>
+                    <p class="text-gray-600 mb-6 text-center text-sm">Rejuvenate your skin with our luxurious facial treatments tailored to your specific skin type and needs.</p>
+                    <div class="flex justify-between items-center border-t border-baboo-secondary/20 pt-4">
+                        <span class="text-lg font-bold text-baboo-primary">$120</span>
+                        <button onclick="openWhatsApp('Facial Treatment')" class="text-sm bg-baboo-primary text-white py-2 px-4 rounded-full hover:bg-baboo-dark transition shadow-md">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Service 4 -->
+                <div class="service-card bg-baboo-light p-8 rounded-xl shadow-lg transition duration-300 border border-baboo-light reveal">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm mx-auto text-baboo-primary text-3xl">
+                        <i class="fas fa-hand-holding-medical"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800 text-center">Deep Tissue</h3>
+                    <p class="text-gray-600 mb-6 text-center text-sm">Targeted therapy for chronic muscle tension and pain relief. Perfect for athletes or physical strain.</p>
+                    <div class="flex justify-between items-center border-t border-baboo-secondary/20 pt-4">
+                        <span class="text-lg font-bold text-baboo-primary">$100</span>
+                        <button onclick="openWhatsApp('Deep Tissue Massage')" class="text-sm bg-baboo-primary text-white py-2 px-4 rounded-full hover:bg-baboo-dark transition shadow-md">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Service 5 -->
+                <div class="service-card bg-baboo-light p-8 rounded-xl shadow-lg transition duration-300 border border-baboo-light reveal">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm mx-auto text-baboo-primary text-3xl">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800 text-center">Body Scrub</h3>
+                    <p class="text-gray-600 mb-6 text-center text-sm">Exfoliate and detoxify your skin with our natural organic sugar and salt body treatment scrubs.</p>
+                    <div class="flex justify-between items-center border-t border-baboo-secondary/20 pt-4">
+                        <span class="text-lg font-bold text-baboo-primary">$75</span>
+                        <button onclick="openWhatsApp('Body Scrub & Wrap')" class="text-sm bg-baboo-primary text-white py-2 px-4 rounded-full hover:bg-baboo-dark transition shadow-md">Book Now</button>
+                    </div>
+                </div>
+                
+                <!-- Service 6 -->
+                <div class="service-card bg-baboo-light p-8 rounded-xl shadow-lg transition duration-300 border border-baboo-light reveal">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm mx-auto text-baboo-primary text-3xl">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800 text-center">Hydrotherapy</h3>
+                    <p class="text-gray-600 mb-6 text-center text-sm">Unwind in our therapeutic hot tub or cold plunge pools to stimulate circulation and immunity.</p>
+                    <div class="flex justify-between items-center border-t border-baboo-secondary/20 pt-4">
+                        <span class="text-lg font-bold text-baboo-primary">$45</span>
+                        <button onclick="openWhatsApp('Hot Tub Relaxation')" class="text-sm bg-baboo-primary text-white py-2 px-4 rounded-full hover:bg-baboo-dark transition shadow-md">Book Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-baboo-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2 relative reveal">
+                    <div class="absolute -top-4 -left-4 w-full h-full border-2 border-baboo-primary rounded-xl z-0"></div>
+                    <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=800&auto=format&fit=crop" alt="Bella Spa Interior" class="rounded-xl shadow-2xl relative z-10 w-full h-[400px] object-cover">
+                    <div class="absolute -bottom-6 -right-6 bg-white p-6 rounded-lg shadow-xl z-20 hidden md:block">
+                        <p class="font-dancing text-3xl text-baboo-primary">Since 2015</p>
+                        <p class="text-sm text-gray-500">Years of Excellence</p>
+                    </div>
+                </div>
+                <div class="md:w-1/2 reveal">
+                    <h2 class="text-3xl md:text-5xl font-bold text-baboo-primary mb-6 font-dancing">About Bella Spa</h2>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">A Sanctuary for Your Senses</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">At Bella Spa, we believe in the transformative power of wellness. Our luxurious sanctuary offers an escape from the daily hustle, where you can reconnect with yourself through our expertly crafted treatments.</p>
+                    <p class="text-gray-600 mb-8 leading-relaxed">Our team of certified therapists use only the finest organic products to ensure your complete relaxation and rejuvenation. Whether you are here for an hour or a day, we ensure you leave feeling renewed.</p>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-8">
+                        <div class="text-center">
+                            <span class="block text-3xl font-bold text-baboo-primary">5k+</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">Happy Clients</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-3xl font-bold text-baboo-primary">15+</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">Therapists</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-3xl font-bold text-baboo-primary">100%</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">Natural</span>
+                        </div>
+                    </div>
+
+                    <button onclick="scrollToSection('contact')" class="border-b-2 border-baboo-primary text-baboo-primary font-bold pb-1 hover:text-baboo-dark transition">
+                        Meet Our Team <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-5xl font-bold text-baboo-primary section-title font-dancing">Spa Packages</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Choose the perfect package for your wellness journey.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <!-- Basic -->
+                <div class="price-card bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-gray-300 reveal">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Basic</h3>
+                    <p class="text-sm text-gray-500 mb-6">Essential Relaxation</p>
+                    <div class="text-4xl font-bold text-baboo-primary mb-6">$150</div>
+                    <ul class="mb-8 space-y-3 text-left">
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-baboo-primary mr-3 text-sm"></i>
+                            <span>60-min Massage</span>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-baboo-primary mr-3 text-sm"></i>
+                            <span>Basic Facial</span>
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="fas fa-times mr-3 text-sm"></i>
+                            <span class="line-through">Hot Tub Access</span>
+                        </li>
+                    </ul>
+                    <button onclick="openWhatsApp('Basic Package')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-full transition duration-300">
+                        Choose Basic
+                    </button>
+                </div>
+                
+                <!-- Premium -->
+                <div class="price-card bg-baboo-primary text-white p-8 rounded-xl shadow-2xl text-center transform scale-105 border-t-4 border-baboo-accent relative reveal">
+                    <div class="absolute top-0 right-0 bg-baboo-accent text-baboo-dark text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">Popular</div>
+                    <h3 class="text-2xl font-bold mb-2">Premium</h3>
+                    <p class="text-sm text-gray-200 mb-6">Complete Rejuvenation</p>
+                    <div class="text-5xl font-bold mb-6 text-baboo-accent">$250</div>
+                    <ul class="mb-8 space-y-3 text-left">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-baboo-accent mr-3 text-sm"></i>
+                            <span>90-min Aromatherapy Massage</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-baboo-accent mr-3 text-sm"></i>
+                            <span>Advanced Anti-Aging Facial</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-baboo-accent mr-3 text-sm"></i>
+                            <span>Private Hot Tub Access</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-baboo-accent mr-3 text-sm"></i>
+                            <span>Herbal Tea & Fruits</span>
+                        </li>
+                    </ul>
+                    <button onclick="openWhatsApp('Premium Package')" class="w-full bg-baboo-accent hover:bg-white text-baboo-primary font-bold py-3 px-6 rounded-full transition duration-300 shadow-lg">
+                        Choose Premium
+                    </button>
+                </div>
+                
+                <!-- Deluxe -->
+                <div class="price-card bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-gray-300 reveal">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Deluxe</h3>
+                    <p class="text-sm text-gray-500 mb-6">Ultimate Luxury</p>
+                    <div class="text-4xl font-bold text-baboo-primary mb-6">$350</div>
+                    <ul class="mb-8 space-y-3 text-left">
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-baboo-primary mr-3 text-sm"></i>
+                            <span>120-min Hot Stone Massage</span>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-baboo-primary mr-3 text-sm"></i>
+                            <span>Signature Gold Facial</span>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-baboo-primary mr-3 text-sm"></i>
+                            <span>Private Suite & Hot Tub</span>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-baboo-primary mr-3 text-sm"></i>
+                            <span>Champagne & Chocolates</span>
+                        </li>
+                    </ul>
+                    <button onclick="openWhatsApp('Deluxe Package')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-full transition duration-300">
+                        Choose Deluxe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-baboo-light relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-5xl font-bold text-baboo-primary section-title font-dancing">Get In Touch</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Ready to relax? Book your session today or ask us any questions.</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row shadow-2xl rounded-2xl overflow-hidden bg-white reveal">
+                <!-- Info Side -->
+                <div class="md:w-5/12 bg-baboo-dark text-white p-10 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-baboo-primary rounded-full opacity-50 blur-2xl"></div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-bold mb-8 font-dancing text-baboo-accent">Contact Information</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="text-baboo-accent mt-1 mr-4 text-xl">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-baboo-accent">Address</h4>
+                                    <p class="text-gray-300">123 Wellness Avenue,<br>Spa City, SC 12345</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="text-baboo-accent mt-1 mr-4 text-xl">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-baboo-accent">Phone</h4>
+                                    <p class="text-gray-300">(123) 456-7890</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="text-baboo-accent mt-1 mr-4 text-xl">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-baboo-accent">Email</h4>
+                                    <p class="text-gray-300">bookings@bellaspa.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12">
+                        <h4 class="font-semibold text-baboo-accent mb-4">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-baboo-primary transition"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-baboo-primary transition"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-baboo-primary transition"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Side -->
+                <div class="md:w-7/12 p-10">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Book Your Session</h3>
+                    <form id="bookingForm" class="space-y-4" onsubmit="handleFormSubmit(event)">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <input type="text" id="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-baboo-primary focus:border-transparent outline-none transition" placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                <input type="tel" id="phone" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-baboo-primary focus:border-transparent outline-none transition" placeholder="(123) 456-7890">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Service</label>
+                                <select id="service" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-baboo-primary focus:border-transparent outline-none transition bg-white">
+                                    <option value="">Select Service</option>
+                                    <option value="Hot Stone Massage">Hot Stone Massage</option>
+                                    <option value="Aromatherapy">Aromatherapy Treatment</option>
+                                    <option value="Facial">Facial Treatment</option>
+                                    <option value="Deep Tissue">Deep Tissue Massage</option>
+                                    <option value="Body Scrub">Body Scrub & Wrap</option>
+                                    <option value="Package">Spa Package</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
+                                <input type="date" id="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-baboo-primary focus:border-transparent outline-none transition">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                            <textarea id="message" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-baboo-primary focus:border-transparent outline-none transition" placeholder="Any special requests or health concerns?"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-baboo-primary hover:bg-baboo-dark text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg mt-2">
+                            Send Booking Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-baboo-dark text-white pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-spa text-3xl mr-2 text-baboo-secondary"></i>
+                        <span class="text-3xl font-bold font-dancing">Bella Spa</span>
+                    </div>
+                    <p class="text-gray-400 mb-4 text-sm leading-relaxed">Your luxury escape for mind, body, and soul. We provide the best treatments using organic products.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-baboo-accent">Quick Links</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li><a href="#home" class="hover:text-baboo-secondary transition">Home</a></li>
+                        <li><a href="#services" class="hover:text-baboo-secondary transition">Services</a></li>
+                        <li><a href="#pricing" class="hover:text-baboo-secondary transition">Pricing</a></li>
+                        <li><a href="#about" class="hover:text-baboo-secondary transition">About Us</a></li>
+                        <li><a href="#contact" class="hover:text-baboo-secondary transition">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-baboo-accent">Working Hours</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li class="flex justify-between"><span>Mon - Fri:</span> <span>9:00 AM - 8:00 PM</span></li>
+                        <li class="flex justify-between"><span>Saturday:</span> <span>10:00 AM - 6:00 PM</span></li>
+                        <li class="flex justify-between"><span>Sunday:</span> <span>10:00 AM - 4:00 PM</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-baboo-accent">Newsletter</h3>
+                    <p class="text-gray-400 mb-4 text-sm">Subscribe to get special offers.</p>
+                    <form class="flex" onsubmit="event.preventDefault(); alert('Subscribed!');">
+                        <input type="email" placeholder="Email" required class="px-4 py-2 w-full rounded-l-lg text-gray-800 focus:outline-none text-sm">
+                        <button class="bg-baboo-primary border border-baboo-primary hover:bg-baboo-secondary hover:border-baboo-secondary px-4 py-2 rounded-r-lg transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; <span id="currentYear"></span> Bella Spa. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/1234567890?text=Hello%2C%20I%20have%20a%20question%20about%20Bella%20Spa" target="_blank" class="whatsapp-button" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp text-white text-3xl"></i>
+    </a>
+
+    <!-- Scroll to Top Button -->
+    <button onclick="scrollToTop()" class="scroll-to-top" id="scrollToTopBtn" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up text-white"></i>
+    </button>
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Mobile menu toggle
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu on link click
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                e.preventDefault();
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70, // Adjust for fixed header
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                const offset = 70;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            }
+        }
+
+        // Scroll to top visibility and Navbar transparency
+        const navbar = document.getElementById('navbar');
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+        window.addEventListener('scroll', function() {
+            // Scroll to Top
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+
+            // Navbar shadow on scroll
+            if (window.scrollY > 10) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.remove('py-2');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.add('py-2');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // WhatsApp specific booking
+        function openWhatsApp(serviceName) {
+            const message = `Hello, I would like to book an appointment for: ${serviceName}`;
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/1234567890?text=${encodedMessage}`, '_blank');
+        }
+
+        // Handle Contact Form
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const service = document.getElementById('service').value;
+            const date = document.getElementById('date').value;
+            
+            // In a real app, send to server here.
+            // For now, construct a WhatsApp URL with all details
+            const message = `Booking Request:\nName: ${name}\nService: ${service}\nDate: ${date}`;
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Show success feedback
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = 'Request Sent!';
+            btn.classList.add('bg-green-600');
+            
+            setTimeout(() => {
+                window.open(`https://wa.me/1234567890?text=${encodedMessage}`, '_blank');
+                btn.innerText = originalText;
+                btn.classList.remove('bg-green-600');
+                e.target.reset();
+            }, 1000);
+        }
+
+        // Intersection Observer for Scroll Animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, observerOptions);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const revealElements = document.querySelectorAll('.reveal');
+            revealElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

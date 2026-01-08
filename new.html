@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoreFlow POS - Software & Hardware Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7e22ce', // Purple-700
+                        secondary: '#a855f7', // Purple-500
+                        dark: '#4c1d95', // Purple-900
+                        brandYellow: '#facc15', // Yellow-400
+                        surface: '#f3f4f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Navbar Glassmorphism */
+        #navbar { transition: all 0.3s ease; }
+        #navbar.nav-scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding-top: 1rem; padding-bottom: 1rem;
+        }
+        #navbar.nav-top { background-color: transparent; padding-top: 1.5rem; padding-bottom: 1.5rem; }
+
+        /* Navbar Text Colors */
+        .nav-top .nav-link { color: white; opacity: 0.9; }
+        .nav-top .nav-link:hover { opacity: 1; }
+        .nav-top .logo-text { color: white; }
+        .nav-top .logo-bg { background: rgba(255,255,255,0.2); color: white; }
+        .nav-top .btn-outline { color: white; border-color: rgba(255,255,255,0.3); }
+        .nav-top .mobile-btn { color: white; }
+
+        .nav-scrolled .nav-link { color: #374151; }
+        .nav-scrolled .nav-link:hover { color: #7e22ce; }
+        .nav-scrolled .logo-text { color: #111827; }
+        .nav-scrolled .logo-bg { background: linear-gradient(135deg, #7e22ce, #a855f7); color: white; }
+        .nav-scrolled .btn-outline { color: #374151; border-color: #d1d5db; }
+        .nav-scrolled .mobile-btn { color: #111827; }
+
+        /* Hardware Card Hover */
+        .hardware-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        
+        /* Modal Animation */
+        .modal { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal.active .modal-content { transform: scale(1); }
+
+        /* Loading Spinner */
+        .price-loader { display: inline-block; width: 1em; height: 1em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.75s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 z-50 nav-top" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-6">
+            <a href="#" class="flex items-center space-x-2 group">
+                <div class="logo-bg w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300">
+                    <i class="fas fa-cash-register text-xl"></i>
+                </div>
+                <span class="logo-text text-xl font-bold transition-colors duration-300">Store<span class="font-light">Flow</span></span>
+            </a>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#features" class="nav-link font-medium transition">Software</a>
+                <a href="#hardware" class="nav-link font-medium transition">Hardware</a>
+                <a href="#pricing" class="nav-link font-medium transition">Pricing</a>
+                <a href="#faq" class="nav-link font-medium transition">FAQ</a>
+            </div>
+
+            <div class="hidden md:flex items-center space-x-4">
+                <button class="btn-outline font-medium px-4 py-2 rounded-lg border transition duration-300 hover:bg-white hover:text-primary">Sign In</button>
+                <button onclick="openModal('Software Trial')" class="bg-brandYellow text-purple-900 hover:bg-white hover:text-purple-900 px-5 py-2 rounded-lg font-bold transition shadow-md hover:-translate-y-0.5">Get Started</button>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden mobile-btn text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t text-gray-800 p-4 flex flex-col space-y-4">
+            <a href="#features" class="font-medium text-gray-600">Software Features</a>
+            <a href="#hardware" class="font-medium text-gray-600">Hardware Shop</a>
+            <a href="#pricing" class="font-medium text-gray-600">Pricing</a>
+            <button onclick="openModal('Software Trial')" class="bg-primary text-white py-3 rounded-lg font-bold w-full">Get Started</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 md:pt-44 md:pb-32 px-6 bg-[#6d28d9] relative overflow-hidden">
+        <!-- Background Gradients -->
+        <div class="absolute inset-0 bg-gradient-to-br from-[#6d28d9] to-[#4c1d95] z-0"></div>
+        <div class="absolute top-0 right-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
+            <div class="reveal active text-center md:text-left">
+                <div class="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/10 backdrop-blur border border-white/20 text-white text-sm font-medium">
+                    <span class="w-2 h-2 rounded-full bg-green-400 inline-block mr-2"></span>
+                    Compatible with PC, Mac, Android & iOS
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
+                    Run your store on <br><span class="text-brandYellow">Any Device.</span>
+                </h1>
+                <p class="text-lg text-purple-100 mb-8 max-w-lg mx-auto md:mx-0 font-light">
+                    The all-in-one POS system that combines powerful software with premium hardware. Sync inventory, track sales, and print receipts instantly.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start">
+                    <button onclick="openModal('Software Trial')" class="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                        Start Free Software Trial
+                    </button>
+                    <button onclick="document.getElementById('hardware').scrollIntoView()" class="border-2 border-white/30 hover:border-white text-white px-8 py-4 rounded-xl font-semibold text-lg transition">
+                        Shop Hardware
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Hero Image Composition -->
+            <div class="reveal active relative hidden md:block" style="transition-delay: 200ms;">
+                <div class="relative z-10">
+                    <!-- Laptop SVG Representation -->
+                    <div class="bg-gray-800 rounded-t-xl p-2 border-b border-gray-700 w-full shadow-2xl">
+                         <div class="flex space-x-1"><div class="w-2 h-2 bg-red-500 rounded-full"></div><div class="w-2 h-2 bg-yellow-500 rounded-full"></div></div>
+                    </div>
+                    <div class="bg-gray-900 border-x border-gray-700 p-4 h-64 flex items-center justify-center text-gray-500">
+                        <i class="fas fa-chart-line text-6xl opacity-20"></i>
+                        <span class="absolute text-white font-mono opacity-30">POS DASHBOARD</span>
+                    </div>
+                    <div class="bg-gray-800 rounded-b-xl h-4 w-full mb-1"></div>
+                    <div class="bg-gray-700 rounded-b-lg h-2 w-3/4 mx-auto"></div>
+                </div>
+                <!-- Tablet Floating -->
+                <div class="absolute -bottom-10 -left-10 w-40 h-52 bg-black rounded-xl border-4 border-gray-800 shadow-2xl transform rotate-[-10deg] flex flex-col overflow-hidden z-20">
+                    <div class="flex-1 bg-white p-2">
+                        <div class="w-full h-2 bg-gray-200 mb-2"></div>
+                        <div class="w-2/3 h-2 bg-gray-200 mb-2"></div>
+                        <div class="grid grid-cols-2 gap-1 mt-4">
+                            <div class="h-8 bg-purple-100 rounded"></div>
+                            <div class="h-8 bg-purple-100 rounded"></div>
+                        </div>
+                    </div>
+                    <div class="h-6 bg-gray-900 flex justify-center items-center"><div class="w-2 h-2 bg-gray-600 rounded-full"></div></div>
+                </div>
+                <!-- Scanner Floating -->
+                <div class="absolute top-10 -right-10 bg-white p-3 rounded-xl shadow-xl z-20 animate-bounce" style="animation-duration: 3s;">
+                    <i class="fas fa-barcode text-4xl text-gray-800"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HARDWARE SECTION -->
+    <section id="hardware" class="py-20 px-6 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary font-bold tracking-wider uppercase text-sm">Hardware Store</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Premium Retail Gear</h2>
+                <p class="text-gray-600 mt-4 max-w-2xl mx-auto">High-performance hardware fully compatible with StoreFlow. Plug and play setup.</p>
+                <p class="text-sm text-gray-400 mt-2" id="hardware-location-text">Pricing detected for your location</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- 1. Barcode Scanner -->
+                <div class="hardware-card bg-white border border-gray-200 rounded-2xl p-6 relative group transition-all duration-300 reveal">
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <i class="fas fa-barcode text-6xl text-gray-300 group-hover:scale-110 transition duration-500"></i>
+                        <div class="absolute top-3 right-3 bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">In Stock</div>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">Laser Barcode Scanner</h3>
+                    <p class="text-sm text-gray-500 mb-4">Wireless, 2.4GHz, Long Range</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Price</span>
+                            <span class="text-xl font-bold text-primary dynamic-price" data-base-price="65">$65</span>
+                        </div>
+                        <button onclick="openModal('Hardware: Barcode Scanner')" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- 2. Thermal Printer -->
+                <div class="hardware-card bg-white border border-gray-200 rounded-2xl p-6 relative group transition-all duration-300 reveal" style="transition-delay: 100ms;">
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <i class="fas fa-print text-6xl text-gray-300 group-hover:scale-110 transition duration-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">80mm Thermal Printer</h3>
+                    <p class="text-sm text-gray-500 mb-4">USB/LAN/Bluetooth Auto-cut</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Price</span>
+                            <span class="text-xl font-bold text-primary dynamic-price" data-base-price="180">$180</span>
+                        </div>
+                        <button onclick="openModal('Hardware: Thermal Printer')" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- 3. Touch Terminal (All-in-One) -->
+                <div class="hardware-card bg-white border border-gray-200 rounded-2xl p-6 relative group transition-all duration-300 reveal" style="transition-delay: 200ms;">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brandYellow text-purple-900 px-3 py-1 rounded-full text-xs font-bold shadow-sm z-10">Best Seller</div>
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <i class="fas fa-desktop text-6xl text-gray-300 group-hover:scale-110 transition duration-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">Pro Touch Terminal</h3>
+                    <p class="text-sm text-gray-500 mb-4">15.6" Screen, Win 11, 8GB RAM</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Price</span>
+                            <span class="text-xl font-bold text-primary dynamic-price" data-base-price="550">$550</span>
+                        </div>
+                        <button onclick="openModal('Hardware: Touch Terminal')" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- 4. Android Tablet Bundle -->
+                <div class="hardware-card bg-white border border-gray-200 rounded-2xl p-6 relative group transition-all duration-300 reveal" style="transition-delay: 300ms;">
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <i class="fas fa-tablet-alt text-6xl text-gray-300 group-hover:scale-110 transition duration-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">Tablet POS Bundle</h3>
+                    <p class="text-sm text-gray-500 mb-4">Samsung 10" + Metal Stand</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Price</span>
+                            <span class="text-xl font-bold text-primary dynamic-price" data-base-price="299">$299</span>
+                        </div>
+                        <button onclick="openModal('Hardware: Tablet Bundle')" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="mt-12 text-center">
+                <p class="text-gray-500 mb-4">Need a full store setup?</p>
+                <button onclick="openModal('Full Hardware Setup Inquiry')" class="text-primary font-semibold hover:text-dark underline">Request a Custom Hardware Quote</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section id="features" class="py-20 px-6 bg-gray-50 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Software that does the heavy lifting.</h2>
+                    <ul class="space-y-6">
+                        <li class="flex items-start">
+                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-primary mt-1 mr-4 shrink-0">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Multi-Store Sync</h4>
+                                <p class="text-gray-600">Inventory deduction happens instantly across your warehouse and all retail outlets.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-primary mt-1 mr-4 shrink-0">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Expense & Profit Reports</h4>
+                                <p class="text-gray-600">Know exactly how much you made today. Track COGS (Cost of Goods Sold) automatically.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-primary mt-1 mr-4 shrink-0">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Offline-First Technology</h4>
+                                <p class="text-gray-600">Internet down? No problem. Keep selling, and data syncs when you're back online.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="relative reveal">
+                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Person using POS" class="rounded-2xl shadow-2xl">
+                    <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl max-w-xs hidden md:block">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <i class="fas fa-user-circle text-2xl text-gray-400"></i>
+                            <span class="font-bold text-sm">Staff Activity</span>
+                        </div>
+                        <div class="text-xs text-gray-500">Just now: Sarah sold 3x Items</div>
+                        <div class="text-xs text-gray-500 mt-1">2 mins ago: Mike added Stock</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section id="pricing" class="py-20 px-6 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Software Subscription</h2>
+                <p class="text-gray-500">Hardware sold separately. Cancel anytime.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+                <!-- Starter -->
+                <div class="border border-gray-200 rounded-2xl p-8 hover:border-purple-300 transition duration-300 reveal">
+                    <h3 class="text-lg font-semibold text-gray-900">Starter</h3>
+                    <div class="mt-4 mb-6">
+                        <span class="text-4xl font-bold text-gray-900 dynamic-price" data-base-price="29">$29</span>
+                        <span class="text-gray-500">/mo</span>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">For pop-ups and kiosks.</p>
+                    <button onclick="openModal('Plan: Starter')" class="w-full border border-primary text-primary hover:bg-purple-50 font-semibold py-3 rounded-lg transition">Start Free Trial</button>
+                    <ul class="mt-8 space-y-4 text-sm text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 1 Location</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 1 User Account</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Basic Reports</li>
+                    </ul>
+                </div>
+
+                <!-- Professional -->
+                <div class="border-2 border-primary rounded-2xl p-8 shadow-xl relative bg-white transform md:-translate-y-4 reveal" style="transition-delay: 100ms;">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brandYellow text-purple-900 px-4 py-1 rounded-full text-sm font-bold shadow-sm">Best Value</div>
+                    <h3 class="text-lg font-semibold text-gray-900">Professional</h3>
+                    <div class="mt-4 mb-6">
+                        <span class="text-4xl font-bold text-gray-900 dynamic-price" data-base-price="79">$79</span>
+                        <span class="text-gray-500">/mo</span>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">For growing retail stores.</p>
+                    <button onclick="openModal('Plan: Professional')" class="w-full bg-primary hover:bg-dark text-white font-semibold py-3 rounded-lg transition shadow-md hover:shadow-lg">Start Free Trial</button>
+                    <ul class="mt-8 space-y-4 text-sm text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Up to 3 Locations</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Unlimited Users</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Barcode & Label Printing</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Customer Loyalty</li>
+                    </ul>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="border border-gray-200 rounded-2xl p-8 hover:border-purple-300 transition duration-300 reveal" style="transition-delay: 200ms;">
+                    <h3 class="text-lg font-semibold text-gray-900">Enterprise</h3>
+                    <div class="mt-4 mb-6">
+                        <span class="text-4xl font-bold text-gray-900">Custom</span>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">For large chains & franchises.</p>
+                    <button onclick="openModal('Plan: Enterprise Inquiry')" class="w-full border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 font-semibold py-3 rounded-lg transition">Contact Sales</button>
+                    <ul class="mt-8 space-y-4 text-sm text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Unlimited Locations</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> API Access</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Dedicated Manager</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8 px-6 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 rounded bg-gradient-to-br from-primary to-secondary flex items-center justify-center"><i class="fas fa-cash-register text-sm"></i></div>
+                        <span class="text-xl font-bold">StoreFlow</span>
+                    </div>
+                    <p class="text-gray-400 text-sm max-w-sm">Simplifying retail operations for businesses in Nigeria, Kenya, South Africa, and beyond.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4 text-sm uppercase tracking-wider text-gray-500">Product</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#features" class="hover:text-white">Software</a></li>
+                        <li><a href="#hardware" class="hover:text-white">Hardware Store</a></li>
+                        <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4 text-sm uppercase tracking-wider text-gray-500">Support</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-xs text-gray-500">
+                &copy; 2026 StoreFlow POS Systems. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Universal Order/Lead Modal -->
+    <div id="order-modal" class="modal fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shopping-cart text-primary text-xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900" id="modal-title">Complete Request</h3>
+                <p class="text-gray-600 text-sm mt-2" id="modal-subtitle">We will send a quote to your email instantly.</p>
+            </div>
+            
+            <form class="space-y-4" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="inquiry-subject" name="subject" value="">
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Product of Interest</label>
+                    <input type="text" id="visible-subject" disabled class="w-full px-4 py-2 bg-gray-100 border border-transparent rounded-lg text-gray-600 font-medium text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="John">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="Doe">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+                    <input type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="+234...">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="john@business.com">
+                </div>
+
+                <button type="submit" class="w-full bg-primary hover:bg-dark text-white font-bold py-3 rounded-lg transition duration-300 mt-2 shadow-lg flex justify-center items-center">
+                    <span id="btn-text">Send Request</span>
+                </button>
+            </form>
+            <p class="text-[10px] text-center text-gray-400 mt-4">Protected by SSL. We value your privacy.</p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. MODAL LOGIC ---
+        const modal = document.getElementById('order-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const subjectInput = document.getElementById('inquiry-subject');
+        const visibleSubject = document.getElementById('visible-subject');
+        
+        function openModal(subject) {
+            subjectInput.value = subject;
+            visibleSubject.value = subject;
+            
+            if(subject.includes("Hardware")) {
+                modalTitle.innerText = "Request Hardware Quote";
+            } else {
+                modalTitle.innerText = "Start Free Trial";
+            }
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-text');
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...';
+            
+            // Simulate network request
+            setTimeout(() => {
+                btn.innerText = 'Sent!';
+                setTimeout(() => {
+                    closeModal();
+                    alert("Thanks! Check your email for the quote/access link.");
+                    btn.innerText = originalText;
+                }, 500);
+            }, 1200);
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // --- 2. MOBILE MENU ---
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+        // --- 3. SCROLL & NAVBAR ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.remove('nav-top');
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.add('nav-top');
+                navbar.classList.remove('nav-scrolled');
+            }
+        });
+
+        // --- 4. ANIMATION REVEAL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- 5. ROBUST CURRENCY LOGIC ---
+        // Mapping common currencies. Rates are approximate USD baselines.
+        const currencyMap = {
+            'NGN': { rate: 1650, locale: 'en-NG', name: 'Nigeria' },
+            'KES': { rate: 155, locale: 'en-KE', name: 'Kenya' },
+            'ZAR': { rate: 19, locale: 'en-ZA', name: 'South Africa' },
+            'GHS': { rate: 15.5, locale: 'en-GH', name: 'Ghana' },
+            'GBP': { rate: 0.82, locale: 'en-GB', name: 'UK' },
+            'EUR': { rate: 0.95, locale: 'de-DE', name: 'Europe' },
+            'USD': { rate: 1, locale: 'en-US', name: 'United States' }
+        };
+
+        async function initPricing() {
+            const priceElements = document.querySelectorAll('.dynamic-price');
+            const hardwareLocText = document.getElementById('hardware-location-text');
+            
+            // Loading state
+            priceElements.forEach(el => el.innerHTML = '<span class="price-loader"></span>');
+
+            try {
+                // Fetch Geo IP Data
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                
+                const userCurrency = data.currency || 'USD';
+                const userCountry = data.country_name || 'Global';
+                const conversion = currencyMap[userCurrency] || currencyMap['USD'];
+
+                if(hardwareLocText) hardwareLocText.innerText = `Prices converted for ${userCountry}`;
+
+                // Update all prices
+                priceElements.forEach(el => {
+                    const baseUSD = parseFloat(el.getAttribute('data-base-price'));
+                    let localPrice = baseUSD * conversion.rate;
+
+                    // Rounding logic: 
+                    // If NGN/KES (high numbers), round to nearest 100
+                    // If USD/EUR (low numbers), keep flexible
+                    if(conversion.rate > 50) {
+                        localPrice = Math.ceil(localPrice / 100) * 100;
+                    } else {
+                        localPrice = Math.ceil(localPrice);
+                    }
+
+                    el.innerText = new Intl.NumberFormat(conversion.locale, {
+                        style: 'currency',
+                        currency: userCurrency,
+                        maximumFractionDigits: 0
+                    }).format(localPrice);
+                });
+
+            } catch (err) {
+                console.warn('Currency detection failed, defaulting to USD', err);
+                priceElements.forEach(el => el.innerText = '$' + el.getAttribute('data-base-price'));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPricing);
+
+    </script>
+</body>
+</html>
