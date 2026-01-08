@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TailorPro - Measurement Management</title>
+    <title>StoreFlow POS Software & Retail Hardware | Offline Cloud POS</title>
+    <meta name="description" content="StoreFlow is a modern POS system with offline mode, real-time inventory sync, and premium retail hardware. Works on PC, Mac, Android & iPad.">
+<meta property="og:title" content="StoreFlow POS Software">
+<meta property="og:description" content="Sell faster with offline-ready cloud POS software and retail hardware.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -11,548 +19,796 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#3b82f6',
-                        secondary: '#1e40af',
-                        accent: '#f59e0b',
-                        dark: '#1f2937'
+                        primary: '#7e22ce', // Purple-700
+                        secondary: '#a855f7', // Purple-500
+                        dark: '#4c1d95', // Purple-900
+                        brandYellow: '#facc15', // Yellow-400
+                        surface: '#f3f4f6'
                     }
                 }
             }
         }
     </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Navbar Glassmorphism */
+        #navbar { transition: all 0.3s ease; }
+        #navbar.nav-scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding-top: 1rem; padding-bottom: 1rem;
+        }
+        #navbar.nav-top { background-color: transparent; padding-top: 1.5rem; padding-bottom: 1.5rem; }
+
+        /* Navbar Text Colors */
+        .nav-top .nav-link { color: white; opacity: 0.9; }
+        .nav-top .nav-link:hover { opacity: 1; }
+        .nav-top .logo-text { color: white; }
+        .nav-top .logo-bg { background: rgba(255,255,255,0.2); color: white; }
+        .nav-top .btn-outline { color: white; border-color: rgba(255,255,255,0.3); }
+        .nav-top .mobile-btn { color: white; }
+
+        .nav-scrolled .nav-link { color: #374151; }
+        .nav-scrolled .nav-link:hover { color: #7e22ce; }
+        .nav-scrolled .logo-text { color: #111827; }
+        .nav-scrolled .logo-bg { background: linear-gradient(135deg, #7e22ce, #a855f7); color: white; }
+        .nav-scrolled .btn-outline { color: #374151; border-color: #d1d5db; }
+        .nav-scrolled .mobile-btn { color: #111827; }
+
+        /* Hardware Card Hover */
+        .hardware-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        
+        /* Modal Animation */
+        .modal { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal.active .modal-content { transform: scale(1); }
+
+        /* FAQ Accordion Styles */
+        .faq-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; }
+        .faq-item.active .faq-content { max-height: 200px; padding-bottom: 1.5rem; } /* 200px arbitrary limit for smooth animation */
+        .faq-item.active .fa-chevron-down { transform: rotate(180deg); }
+
+        /* Loading Spinner */
+        .price-loader { display: inline-block; width: 1em; height: 1em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.75s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fas fa-cutlery text-primary text-2xl"></i>
-                <h1 class="text-2xl font-bold text-dark">Tailor<span class="text-primary">Pro</span></h1>
+<body class="bg-gray-50 text-gray-800 antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 z-50 nav-top" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-6">
+            <a href="#" class="flex items-center space-x-2 group">
+                <div class="logo-bg w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300">
+                    <i class="fas fa-cash-register text-xl"></i>
+                </div>
+                <span class="logo-text text-xl font-bold transition-colors duration-300">Store<span class="font-light">Flow</span></span>
+            </a>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#features" class="nav-link font-medium transition">Software</a>
+                <a href="#hardware" class="nav-link font-medium transition">Hardware</a>
+                <a href="#pricing" class="nav-link font-medium transition">Pricing</a>
+                <a href="#faq" class="nav-link font-medium transition">FAQ</a>
             </div>
-            <nav class="hidden md:flex space-x-6">
-                <button onclick="showPage('dashboard')" class="text-dark hover:text-primary font-medium transition-colors">Dashboard</button>
-                <button onclick="showPage('measurements')" class="text-dark hover:text-primary font-medium transition-colors">Measurements</button>
-                <button onclick="showPage('customers')" class="text-dark hover:text-primary font-medium transition-colors">Customers</button>
-                <button onclick="showPage('reports')" class="text-dark hover:text-primary font-medium transition-colors">Reports</button>
-            </nav>
-            <div class="flex items-center space-x-4">
-                <button class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg transition-colors flex items-center">
-                    <i class="fas fa-user mr-2"></i> Admin
-                </button>
+
+            <div class="hidden md:flex items-center space-x-4">
+                <button class="btn-outline font-medium px-4 py-2 rounded-lg border transition duration-300 hover:bg-white hover:text-primary">Sign In</button>
+                <button onclick="openModal('Software Trial')" class="bg-brandYellow text-purple-900 hover:bg-white hover:text-purple-900 px-5 py-2 rounded-lg font-bold transition shadow-md hover:-translate-y-0.5">Get Started</button>
             </div>
+
+            <button id="mobile-menu-btn" class="md:hidden mobile-btn text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Dashboard Page -->
-        <section id="dashboard" class="page">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-dark mb-2">Dashboard Overview</h2>
-                <p class="text-gray-600">Welcome back! Here's what's happening today.</p>
-            </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t text-gray-800 p-4 flex flex-col space-y-4 transition-all duration-300 z-40">
+            <a href="#features" class="font-medium text-gray-600 hover:text-primary">Software Features</a>
+            <a href="#hardware" class="font-medium text-gray-600 hover:text-primary">Hardware Shop</a>
+            <a href="#pricing" class="font-medium text-gray-600 hover:text-primary">Pricing</a>
+            <a href="#faq" class="font-medium text-gray-600 hover:text-primary">FAQ</a>
+            <button onclick="openModal('Software Trial')" class="bg-primary text-white py-3 rounded-lg font-bold w-full">Get Started</button>
+        </div>
+    </nav>
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Customers</p>
-                            <p class="text-3xl font-bold text-dark mt-1">142</p>
-                        </div>
-                        <div class="bg-blue-100 p-3 rounded-full">
-                            <i class="fas fa-users text-primary text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <p class="text-green-500 text-sm flex items-center">
-                            <i class="fas fa-arrow-up mr-1"></i> 12% from last month
-                        </p>
-                    </div>
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 md:pt-44 md:pb-32 px-6 bg-[#6d28d9] relative overflow-hidden">
+        <!-- Background Gradients -->
+        <div class="absolute inset-0 bg-gradient-to-br from-[#6d28d9] to-[#4c1d95] z-0"></div>
+        <div class="absolute top-0 right-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
+            <div class="reveal active text-center md:text-left">
+                <div class="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/10 backdrop-blur border border-white/20 text-white text-sm font-medium">
+                    <span class="w-2 h-2 rounded-full bg-green-400 inline-block mr-2"></span>
+                    Compatible with PC, Mac, Android & iOS
                 </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Measurements Today</p>
-                            <p class="text-3xl font-bold text-dark mt-1">24</p>
-                        </div>
-                        <div class="bg-yellow-100 p-3 rounded-full">
-                            <i class="fas fa-ruler-combined text-accent text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <p class="text-green-500 text-sm flex items-center">
-                            <i class="fas fa-arrow-up mr-1"></i> 8% from yesterday
-                        </p>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Pending Orders</p>
-                            <p class="text-3xl font-bold text-dark mt-1">8</p>
-                        </div>
-                        <div class="bg-red-100 p-3 rounded-full">
-                            <i class="fas fa-clock text-red-500 text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <p class="text-red-500 text-sm flex items-center">
-                            <i class="fas fa-arrow-down mr-1"></i> 3 from yesterday
-                        </p>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Revenue</p>
-                            <p class="text-3xl font-bold text-dark mt-1">$2,840</p>
-                        </div>
-                        <div class="bg-green-100 p-3 rounded-full">
-                            <i class="fas fa-dollar-sign text-green-500 text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <p class="text-green-500 text-sm flex items-center">
-                            <i class="fas fa-arrow-up mr-1"></i> 15% from last week
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold text-dark mb-4">Recent Measurements</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-dark">John Smith</div>
-                                                <div class="text-sm text-gray-500">john@example.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-15</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <button class="text-primary hover:text-secondary mr-3">View</button>
-                                        <button class="text-gray-500 hover:text-gray-700">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-dark">Emily Johnson</div>
-                                                <div class="text-sm text-gray-500">emily@example.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-14</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">In Progress</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <button class="text-primary hover:text-secondary mr-3">View</button>
-                                        <button class="text-gray-500 hover:text-gray-700">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-dark">Michael Brown</div>
-                                                <div class="text-sm text-gray-500">michael@example.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-13</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Scheduled</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <button class="text-primary hover:text-secondary mr-3">View</button>
-                                        <button class="text-gray-500 hover:text-gray-700">Edit</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold text-dark mb-4">Quick Actions</h3>
-                    <div class="space-y-4">
-                        <button onclick="showPage('measurements')" class="w-full bg-primary hover:bg-secondary text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i class="fas fa-plus-circle mr-2"></i> New Measurement
-                        </button>
-                        <button class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-dark py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i class="fas fa-user-plus mr-2"></i> Add Customer
-                        </button>
-                        <button class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-dark py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i class="fas fa-file-invoice mr-2"></i> Create Invoice
-                        </button>
-                        <button class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-dark py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i class="fas fa-calendar-check mr-2"></i> Schedule Appointment
-                        </button>
-                    </div>
-
-                    <h3 class="text-xl font-bold text-dark mt-6 mb-4">Upcoming Tasks</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mt-1">
-                                <div class="h-2 w-2 bg-primary rounded-full"></div>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-dark">Measure John Smith</p>
-                                <p class="text-xs text-gray-500">Today, 2:00 PM</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mt-1">
-                                <div class="h-2 w-2 bg-primary rounded-full"></div>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-dark">Prepare invoice for Emily</p>
-                                <p class="text-xs text-gray-500">Tomorrow, 10:00 AM</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mt-1">
-                                <div class="h-2 w-2 bg-primary rounded-full"></div>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-dark">Update customer records</p>
-                                <p class="text-xs text-gray-500">June 18, 2023</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Measurements Page -->
-        <section id="measurements" class="page hidden">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-dark mb-2">Measurement Records</h2>
-                <p class="text-gray-600">Manage and view all customer measurements</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                    <div>
-                        <h3 class="text-xl font-bold text-dark">Add New Measurement</h3>
-                        <p class="text-gray-600">Enter customer details and measurements</p>
-                    </div>
-                    <button onclick="showPage('dashboard')" class="mt-4 md:mt-0 bg-gray-100 hover:bg-gray-200 text-dark py-2 px-4 rounded-lg transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+                <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
+                    Run your store on <br><span class="text-brandYellow">Any Device.</span>
+                </h1>
+                <p class="text-lg text-purple-100 mb-8 max-w-lg mx-auto md:mx-0 font-light">
+                    The all-in-one POS system that combines powerful software with premium hardware. Sync inventory, track sales, and print receipts instantly.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start">
+                    <button onclick="openModal('Software Trial')" class="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                        Start Free Software Trial
+                    </button>
+                    <button onclick="document.getElementById('hardware').scrollIntoView()" class="border-2 border-white/30 hover:border-white text-white px-8 py-4 rounded-xl font-semibold text-lg transition">
+                        Shop Hardware
                     </button>
                 </div>
-
-                <form id="measurementForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Customer Name *</label>
-                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter full name">
+            </div>
+            
+            <!-- Hero Image Composition -->
+            <div class="reveal active relative hidden md:block" style="transition-delay: 200ms;">
+                <div class="relative z-10">
+                    <!-- Laptop SVG Representation -->
+                    <div class="bg-gray-800 rounded-t-xl p-2 border-b border-gray-700 w-full shadow-2xl">
+                         <div class="flex space-x-1"><div class="w-2 h-2 bg-red-500 rounded-full"></div><div class="w-2 h-2 bg-yellow-500 rounded-full"></div></div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
-                        <input type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter phone number">
+                    <div class="bg-gray-900 border-x border-gray-700 p-4 h-64 flex items-center justify-center text-gray-500">
+                        <i class="fas fa-chart-line text-6xl opacity-20"></i>
+                        <span class="absolute text-white font-mono opacity-30">POS DASHBOARD</span>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter email address">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Date *</label>
-                        <input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <h4 class="font-medium text-dark mb-3">Body Measurements</h4>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Chest *</label>
-                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Waist *</label>
-                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Hip *</label>
-                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Sleeve Length *</label>
-                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Shoulder Width *</label>
-                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Length *</label>
-                        <input type="number" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="in inches/cm">
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                        <textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="3" placeholder="Additional notes about the measurement..."></textarea>
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <div class="flex justify-end space-x-4">
-                            <button type="button" onclick="showPage('dashboard')" class="px-6 py-2 border border-gray-300 text-dark rounded-lg hover:bg-gray-50 transition-colors">
-                                Cancel
-                            </button>
-                            <button type="submit" class="px-6 py-2 bg-primary hover:bg-secondary text-white rounded-lg transition-colors">
-                                Save Measurement
-                            </button>
+                    <div class="bg-gray-800 rounded-b-xl h-4 w-full mb-1"></div>
+                    <div class="bg-gray-700 rounded-b-lg h-2 w-3/4 mx-auto"></div>
+                </div>
+                <!-- Tablet Floating -->
+                <div class="absolute -bottom-10 -left-10 w-40 h-52 bg-black rounded-xl border-4 border-gray-800 shadow-2xl transform rotate-[-10deg] flex flex-col overflow-hidden z-20">
+                    <div class="flex-1 bg-white p-2">
+                        <div class="w-full h-2 bg-gray-200 mb-2"></div>
+                        <div class="w-2/3 h-2 bg-gray-200 mb-2"></div>
+                        <div class="grid grid-cols-2 gap-1 mt-4">
+                            <div class="h-8 bg-purple-100 rounded"></div>
+                            <div class="h-8 bg-purple-100 rounded"></div>
                         </div>
                     </div>
+                    <div class="h-6 bg-gray-900 flex justify-center items-center"><div class="w-2 h-2 bg-gray-600 rounded-full"></div></div>
+                </div>
+                <!-- Scanner Floating -->
+                <div class="absolute top-10 -right-10 bg-white p-3 rounded-xl shadow-xl z-20 animate-bounce" style="animation-duration: 3s;">
+                    <i class="fas fa-barcode text-4xl text-gray-800"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+<section class="py-8 bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <p class="text-center text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">Powering modern retail brands</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <i class="fab fa-aws text-4xl"></i>
+                <i class="fab fa-stripe text-4xl"></i>
+                <i class="fab fa-google-pay text-4xl"></i>
+                <i class="fab fa-shopify text-4xl"></i>
+                <i class="fab fa-apple-pay text-4xl"></i>
+            </div>
+        </div>
+    </section>
+    <!-- HARDWARE SECTION -->
+    <section id="hardware" class="py-20 px-6 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary font-bold tracking-wider uppercase text-sm">Hardware Store</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Premium Retail Gear</h2>
+                <p class="text-gray-600 mt-4 max-w-2xl mx-auto">High-performance hardware fully compatible with StoreFlow. Plug and play setup.</p>
+                <p class="text-sm text-gray-400 mt-2" id="hardware-location-text">Pricing detected for your location</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- 1. Barcode Scanner -->
+                <div class="hardware-card bg-white border border-gray-200 rounded-2xl p-6 relative group transition-all duration-300 reveal">
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <i class="fas fa-barcode text-6xl text-gray-300 group-hover:scale-110 transition duration-500"></i>
+                        <div class="absolute top-3 right-3 bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">In Stock</div>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">Laser Barcode Scanner</h3>
+                    <p class="text-sm text-gray-500 mb-4">Wireless, 2.4GHz, Long Range</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Price</span>
+                            <span class="text-xl font-bold text-primary dynamic-price" data-base-price="65">$65</span>
+                        </div>
+                        <button onclick="openModal('Hardware: Barcode Scanner')" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- 2. Thermal Printer -->
+                <div class="hardware-card bg-white border border-gray-200 rounded-2xl p-6 relative group transition-all duration-300 reveal" style="transition-delay: 100ms;">
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <i class="fas fa-print text-6xl text-gray-300 group-hover:scale-110 transition duration-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">80mm Thermal Printer</h3>
+                    <p class="text-sm text-gray-500 mb-4">USB/LAN/Bluetooth Auto-cut</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Price</span>
+                            <span class="text-xl font-bold text-primary dynamic-price" data-base-price="180">$180</span>
+                        </div>
+                        <button onclick="openModal('Hardware: Thermal Printer')" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- 3. Touch Terminal (All-in-One) -->
+                <div class="hardware-card bg-white border border-gray-200 rounded-2xl p-6 relative group transition-all duration-300 reveal" style="transition-delay: 200ms;">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brandYellow text-purple-900 px-3 py-1 rounded-full text-xs font-bold shadow-sm z-10">Best Seller</div>
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <i class="fas fa-desktop text-6xl text-gray-300 group-hover:scale-110 transition duration-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">Pro Touch Terminal</h3>
+                    <p class="text-sm text-gray-500 mb-4">15.6" Screen, Win 11, 8GB RAM</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Price</span>
+                            <span class="text-xl font-bold text-primary dynamic-price" data-base-price="550">$550</span>
+                        </div>
+                        <button onclick="openModal('Hardware: Touch Terminal')" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- 4. Android Tablet Bundle -->
+                <div class="hardware-card bg-white border border-gray-200 rounded-2xl p-6 relative group transition-all duration-300 reveal" style="transition-delay: 300ms;">
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden">
+                        <i class="fas fa-tablet-alt text-6xl text-gray-300 group-hover:scale-110 transition duration-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">Tablet POS Bundle</h3>
+                    <p class="text-sm text-gray-500 mb-4">Samsung 10" + Metal Stand</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Price</span>
+                            <span class="text-xl font-bold text-primary dynamic-price" data-base-price="299">$299</span>
+                        </div>
+                        <button onclick="openModal('Hardware: Tablet Bundle')" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <p class="text-gray-500 mb-4">Need a full store setup?</p>
+                <button onclick="openModal('Full Hardware Setup Inquiry')" class="text-primary font-semibold hover:text-dark underline">Request a Custom Hardware Quote</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <!-- FEATURES SECTION -->
+<section id="features" class="py-20 px-6 bg-gray-50 border-t border-gray-200">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+
+      <!-- LEFT: COPY -->
+      <div class="reveal">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          POS software that runs your business — not just the checkout.
+        </h2>
+
+        <p class="text-gray-600 mb-8 max-w-xl">
+          StoreFlow is a modern <strong>cloud POS system</strong> built for growing retailers.
+          Track inventory, sales, staff, and profits in real time — even when offline.
+        </p>
+
+        <ul class="space-y-6">
+
+          <!-- Feature 1 -->
+          <li class="flex items-start">
+            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-primary mt-1 mr-4 shrink-0">
+              <i class="fas fa-sync" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg">Real-Time Multi-Store Inventory Sync</h3>
+              <p class="text-gray-600">
+                Stock updates instantly across all stores and warehouses,
+                preventing overselling and stockouts.
+              </p>
+            </div>
+          </li>
+
+          <!-- Feature 2 -->
+          <li class="flex items-start">
+            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-primary mt-1 mr-4 shrink-0">
+              <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg">Automatic Profit, Expense & COGS Reports</h3>
+              <p class="text-gray-600">
+                See exactly how much you make every day.
+                Cost of Goods Sold and margins are calculated automatically.
+              </p>
+            </div>
+          </li>
+
+          <!-- Feature 3 -->
+          <li class="flex items-start">
+            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-primary mt-1 mr-4 shrink-0">
+              <i class="fas fa-wifi" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg">Offline-First POS Technology</h3>
+              <p class="text-gray-600">
+                Internet outage? Keep selling and printing receipts.
+                All sales sync automatically once you're back online.
+              </p>
+            </div>
+          </li>
+
+        </ul>
+
+        <!-- CTA -->
+        <div class="mt-10">
+          <button
+            onclick="openModal('Software Trial')"
+            class="bg-primary hover:bg-dark text-white px-8 py-4 rounded-xl font-bold transition shadow-md hover:shadow-lg"
+          >
+            Try the POS Free for 14 Days
+          </button>
+          <p class="text-sm text-gray-400 mt-3">
+            No credit card required • Works on PC, Mac, Android & iPad
+          </p>
+        </div>
+      </div>
+
+      <!-- RIGHT: IMAGE -->
+      <div class="relative reveal">
+        <img
+          loading="lazy"
+          src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d"
+          alt="Retail cashier using StoreFlow cloud POS software on tablet"
+          class="rounded-2xl shadow-2xl"
+        >
+
+        <!-- Activity Card -->
+        <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl max-w-xs hidden md:block">
+          <div class="flex items-center space-x-3 mb-2">
+            <i class="fas fa-user-circle text-2xl text-gray-400"></i>
+            <span class="font-bold text-sm">Live Staff Activity</span>
+          </div>
+          <div class="text-xs text-gray-500">Just now: Sarah completed a sale</div>
+          <div class="text-xs text-gray-500 mt-1">2 mins ago: Mike updated inventory</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+    <!-- PRICING SECTION -->
+    <section id="pricing" class="py-20 px-6 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Software Subscription</h2>
+                <p class="text-gray-500">Hardware sold separately. Cancel anytime.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+                <!-- Starter -->
+                <div class="border border-gray-200 rounded-2xl p-8 hover:border-purple-300 transition duration-300 reveal">
+                    <h3 class="text-lg font-semibold text-gray-900">Starter</h3>
+                    <div class="mt-4 mb-6">
+                        <span class="text-4xl font-bold text-gray-900 dynamic-price" data-base-price="29">₦29</span>
+                        <span class="text-gray-500">/mo</span>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">For pop-ups and kiosks.</p>
+                    <button onclick="openModal('Plan: Starter')" class="w-full border border-primary text-primary hover:bg-purple-50 font-semibold py-3 rounded-lg transition">Start Free Trial</button>
+                    <ul class="mt-8 space-y-4 text-sm text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 1 Location</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 1 User Account</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Basic Reports</li>
+                    </ul>
+                </div>
+
+                <!-- Professional -->
+                <div class="border-2 border-primary rounded-2xl p-8 shadow-xl relative bg-white transform md:-translate-y-4 reveal" style="transition-delay: 100ms;">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brandYellow text-purple-900 px-4 py-1 rounded-full text-sm font-bold shadow-sm">Best Value</div>
+                    <h3 class="text-lg font-semibold text-gray-900">Professional</h3>
+                    <div class="mt-4 mb-6">
+                        <span class="text-4xl font-bold text-gray-900 dynamic-price" data-base-price="79">₦79</span>
+                        <span class="text-gray-500">/mo</span>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">For growing retail stores.</p>
+                    <button onclick="openModal('Plan: Professional')" class="w-full bg-primary hover:bg-dark text-white font-semibold py-3 rounded-lg transition shadow-md hover:shadow-lg">Start Free Trial</button>
+                    <ul class="mt-8 space-y-4 text-sm text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Up to 3 Locations</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Unlimited Users</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Barcode & Label Printing</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Customer Loyalty</li>
+                    </ul>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="border border-gray-200 rounded-2xl p-8 hover:border-purple-300 transition duration-300 reveal" style="transition-delay: 200ms;">
+                    <h3 class="text-lg font-semibold text-gray-900">Enterprise</h3>
+                    <div class="mt-4 mb-6">
+                        <span class="text-4xl font-bold text-gray-900">Custom</span>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">For large chains & franchises.</p>
+                    <button onclick="openModal('Plan: Enterprise Inquiry')" class="w-full border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 font-semibold py-3 rounded-lg transition">Contact Sales</button>
+                    <ul class="mt-8 space-y-4 text-sm text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Unlimited Locations</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> API Access</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Dedicated Manager</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="py-20 px-6 bg-gray-50 border-t border-gray-200">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
+                <p class="text-gray-500 mt-2">Have questions? We're here to help.</p>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Question 1 -->
+                <div class="faq-item group border border-gray-200 rounded-2xl bg-white overflow-hidden transition-all duration-300 hover:shadow-md reveal">
+                    <button onclick="toggleFaq(this)" class="flex justify-between items-center w-full p-6 text-left focus:outline-none">
+                        <span class="font-bold text-gray-800">Do I need an internet connection to sell?</span>
+                        <i class="fas fa-chevron-down text-primary transform transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content bg-gray-50">
+                        <div class="px-6 text-gray-600">
+                            No! StoreFlow works perfectly offline. You can continue processing sales and printing receipts. The system will automatically sync your sales data to the cloud once your internet connection is restored.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="faq-item group border border-gray-200 rounded-2xl bg-white overflow-hidden transition-all duration-300 hover:shadow-md reveal">
+                    <button onclick="toggleFaq(this)" class="flex justify-between items-center w-full p-6 text-left focus:outline-none">
+                        <span class="font-bold text-gray-800">Can I use my existing hardware?</span>
+                        <i class="fas fa-chevron-down text-primary transform transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content bg-gray-50">
+                        <div class="px-6 text-gray-600">
+                            Yes, StoreFlow runs on any device with a web browser (Windows, Mac, Android tablets, iPad). We are also compatible with most standard USB barcode scanners and receipt printers (Epson, Star, generic brands).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="faq-item group border border-gray-200 rounded-2xl bg-white overflow-hidden transition-all duration-300 hover:shadow-md reveal">
+                    <button onclick="toggleFaq(this)" class="flex justify-between items-center w-full p-6 text-left focus:outline-none">
+                        <span class="font-bold text-gray-800">Does the free trial include all features?</span>
+                        <i class="fas fa-chevron-down text-primary transform transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content bg-gray-50">
+                        <div class="px-6 text-gray-600">
+                            Yes, the 14-day free trial gives you full access to the Professional Plan features, including inventory management, multi-user accounts, and advanced reporting, so you can fully evaluate the system.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="faq-item group border border-gray-200 rounded-2xl bg-white overflow-hidden transition-all duration-300 hover:shadow-md reveal">
+                    <button onclick="toggleFaq(this)" class="flex justify-between items-center w-full p-6 text-left focus:outline-none">
+                        <span class="font-bold text-gray-800">Can I manage multiple stores?</span>
+                        <i class="fas fa-chevron-down text-primary transform transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content bg-gray-50">
+                        <div class="px-6 text-gray-600">
+                            Absolutely. StoreFlow is designed for growth. You can manage inventory, view reports, and transfer stock between multiple locations from a single admin dashboard.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- Testimonials Section (New) -->
+<section class="py-20 px-6 bg-purple-900 text-white">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-12">Trusted by 2,000+ Retailers</h2>
+        <div class="grid md:grid-cols-2 gap-12">
+            <div class="bg-white bg-opacity-10 p-8 rounded-2xl backdrop-blur-sm">
+                <div class="flex text-yellow-400 mb-4">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="text-lg italic mb-6">"StoreFlow changed how we manage our boutique. The offline mode saved us during a power outage on Black Friday!"</p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gray-300 rounded-full mr-4 flex items-center justify-center text-gray-800 font-bold">SJ</div>
+                    <div>
+                        <div class="font-bold">Sarah Jenkins</div>
+                        <div class="text-sm opacity-70">Owner, The Velvet Hanger</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white bg-opacity-10 p-8 rounded-2xl backdrop-blur-sm">
+                <div class="flex text-yellow-400 mb-4">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                </div>
+                <p class="text-lg italic mb-6">"Inventory sync between our warehouse and three retail locations is finally accurate. Highly recommended."</p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gray-300 rounded-full mr-4 flex items-center justify-center text-gray-800 font-bold">MR</div>
+                    <div>
+                        <div class="font-bold">Mike Ross</div>
+                        <div class="text-sm opacity-70">Manager, TechHub Electronics</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    <!-- FOOTER -->
+   <footer class="bg-gray-900 text-white pt-16 pb-8 px-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div>
+                <div class="flex items-center space-x-2 mb-6">
+                    <div class="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
+                        <i class="fas fa-cash-register text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold">Store<span class="text-primary">Flow</span></span>
+                </div>
+                <p class="text-gray-400 mb-6 text-sm">Modern POS system designed for the needs of growing retail businesses.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-semibold mb-6">Product</h3>
+                <ul class="space-y-3 text-sm text-gray-400">
+                    <li><a href="#features" class="hover:text-white transition">Features</a></li>
+                    <li><a href="#pricing" class="hover:text-white transition">Pricing</a></li>
+                    <li><a href="#" class="hover:text-white transition">Hardware</a></li>
+                    <li><a href="#" class="hover:text-white transition">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-semibold mb-6">Company</h3>
+                <ul class="space-y-3 text-sm text-gray-400">
+                    <li><a href="#" class="hover:text-white transition">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition">Careers</a></li>
+                    <li><a href="#" class="hover:text-white transition">Blog</a></li>
+                    <li><a href="#" class="hover:text-white transition">Contact</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold mb-6">Stay Updated</h3>
+                <form class="flex flex-col space-y-3" onsubmit="event.preventDefault(); alert('Subscribed!')">
+                    <input type="email" placeholder="Enter your email" class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-white">
+                    <button class="bg-primary hover:bg-dark text-white py-2 rounded-lg text-sm font-semibold transition">Subscribe</button>
                 </form>
             </div>
-        </section>
-
-        <!-- Customers Page -->
-        <section id="customers" class="page hidden">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-dark mb-2">Customer Management</h2>
-                <p class="text-gray-600">View and manage all customers</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                    <div>
-                        <h3 class="text-xl font-bold text-dark">All Customers</h3>
-                        <p class="text-gray-600">List of registered customers</p>
-                    </div>
-                    <button class="mt-4 md:mt-0 bg-primary hover:bg-secondary text-white py-2 px-4 rounded-lg transition-colors flex items-center">
-                        <i class="fas fa-plus mr-2"></i> Add Customer
-                    </button>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Measurement</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-dark">John Smith</div>
-                                            <div class="text-sm text-gray-500">john@example.com</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <div>+1 (555) 123-4567</div>
-                                    <div class="text-gray-400">johnsmith@gmail.com</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-15</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button class="text-primary hover:text-secondary mr-3">View</button>
-                                    <button class="text-gray-500 hover:text-gray-700">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-dark">Emily Johnson</div>
-                                            <div class="text-sm text-gray-500">emily@example.com</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <div>+1 (555) 234-5678</div>
-                                    <div class="text-gray-400">ejohnson@yahoo.com</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-14</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button class="text-primary hover:text-secondary mr-3">View</button>
-                                    <button class="text-gray-500 hover:text-gray-700">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-dark">Michael Brown</div>
-                                            <div class="text-sm text-gray-500">michael@example.com</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <div>+1 (555) 345-6789</div>
-                                    <div class="text-gray-400">m.brown@company.com</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-13</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Inactive</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button class="text-primary hover:text-secondary mr-3">View</button>
-                                    <button class="text-gray-500 hover:text-gray-700">Edit</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Reports Page -->
-        <section id="reports" class="page hidden">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-dark mb-2">Reports & Analytics</h2>
-                <p class="text-gray-600">View detailed analytics and reports</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold text-dark mb-4">Measurement Trends</h3>
-                    <div class="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                        <p class="text-gray-500">Chart visualization would appear here</p>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold text-dark mb-4">Customer Distribution</h3>
-                    <div class="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                        <p class="text-gray-500">Chart visualization would appear here</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="text-xl font-bold text-dark mb-4">Export Data</h3>
-                <div class="flex flex-wrap gap-4">
-                    <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center">
-                        <i class="fas fa-file-excel mr-2"></i> Export to Excel
-                    </button>
-                    <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center">
-                        <i class="fas fa-file-pdf mr-2"></i> Export to PDF
-                    </button>
-                    <button class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center">
-                        <i class="fas fa-file-csv mr-2"></i> Export to CSV
-                    </button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-8 mt-12">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <div class="flex items-center space-x-2">
-                        <i class="fas fa-cutlery text-primary text-2xl"></i>
-                        <h2 class="text-xl font-bold">Tailor<span class="text-primary">Pro</span></h2>
-                    </div>
-                    <p class="text-gray-400 mt-2">Professional measurement management system</p>
-                </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400">
-                <p>&copy; 2023 TailorPro. All rights reserved.</p>
+        </div>
+        
+        <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
+            <p>&copy; 2026 StoreFlow POS. All rights reserved.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="#" class="hover:text-white">Privacy</a>
+                <a href="#" class="hover:text-white">Terms</a>
+                <a href="#" class="hover:text-white">Sitemap</a>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
 
+    <!-- Universal Order/Lead Modal -->
+    <div id="order-modal" class="modal fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shopping-cart text-primary text-xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900" id="modal-title">Complete Request</h3>
+                <p class="text-gray-600 text-sm mt-2" id="modal-subtitle">We will send a quote to your email instantly.</p>
+            </div>
+            
+            <form class="space-y-4" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="inquiry-subject" name="subject" value="">
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Product of Interest</label>
+                    <input type="text" id="visible-subject" disabled class="w-full px-4 py-2 bg-gray-100 border border-transparent rounded-lg text-gray-600 font-medium text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="John">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="Doe">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+                    <input type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="+234...">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="john@business.com">
+                </div>
+
+                <button type="submit" class="w-full bg-primary hover:bg-dark text-white font-bold py-3 rounded-lg transition duration-300 mt-2 shadow-lg flex justify-center items-center">
+                    <span id="btn-text">Send Request</span>
+                </button>
+            </form>
+            <p class="text-[10px] text-center text-gray-400 mt-4">Protected by SSL. We value your privacy.</p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Show/hide pages
-        function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.add('hidden');
-            });
+        // --- 1. MODAL LOGIC ---
+        const modal = document.getElementById('order-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const subjectInput = document.getElementById('inquiry-subject');
+        const visibleSubject = document.getElementById('visible-subject');
+        
+        function openModal(subject) {
+            subjectInput.value = subject;
+            visibleSubject.value = subject;
             
-            // Show selected page
-            document.getElementById(pageId).classList.remove('hidden');
+            if(subject.includes("Hardware")) {
+                modalTitle.innerText = "Request Hardware Quote";
+            } else {
+                modalTitle.innerText = "Start Free Trial";
+            }
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-text');
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...';
             
-            // Update active nav item (if needed)
-            document.querySelectorAll('nav button').forEach(btn => {
-                btn.classList.remove('text-primary');
-            });
+            // Simulate network request
+            setTimeout(() => {
+                btn.innerText = 'Sent!';
+                setTimeout(() => {
+                    closeModal();
+                    alert("Thanks! Check your email for the quote/access link.");
+                    btn.innerText = originalText;
+                }, 500);
+            }, 1200);
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // --- 2. FAQ TOGGLE LOGIC ---
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const content = button.nextElementSibling;
             
-            if (pageId !== 'dashboard') {
-                const navBtn = Array.from(document.querySelectorAll('nav button')).find(btn => 
-                    btn.onclick.toString().includes(pageId)
-                );
-                if (navBtn) {
-                    navBtn.classList.add('text-primary');
-                }
+            // Toggle active class on parent
+            faqItem.classList.toggle('active');
+            
+            // Smooth expand/collapse logic using max-height
+            if (faqItem.classList.contains('active')) {
+                // Set explicit height to allow transition
+                content.style.maxHeight = content.scrollHeight + 32 + "px"; // 32 for padding
+                content.style.paddingBottom = "1.5rem";
+            } else {
+                content.style.maxHeight = "0";
+                content.style.paddingBottom = "0";
             }
         }
 
-        // Initialize with dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            showPage('dashboard');
-            
-            // Form submission handling
-            document.getElementById('measurementForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                alert('Measurement saved successfully!');
-                this.reset();
-            });
+        // --- 3. MOBILE MENU ---
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+        // --- 4. SCROLL & NAVBAR ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.remove('nav-top');
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.add('nav-top');
+                navbar.classList.remove('nav-scrolled');
+            }
         });
+
+        // --- 5. ANIMATION REVEAL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- 6. ROBUST CURRENCY LOGIC ---
+        // Mapping common currencies. Rates are approximate USD baselines.
+        const currencyMap = {
+            'NGN': { rate: 1650, locale: 'en-NG', name: 'Nigeria' },
+            'KES': { rate: 155, locale: 'en-KE', name: 'Kenya' },
+            'ZAR': { rate: 19, locale: 'en-ZA', name: 'South Africa' },
+            'GHS': { rate: 15.5, locale: 'en-GH', name: 'Ghana' },
+            'GBP': { rate: 0.82, locale: 'en-GB', name: 'UK' },
+            'EUR': { rate: 0.95, locale: 'de-DE', name: 'Europe' },
+            'USD': { rate: 1, locale: 'en-US', name: 'United States' }
+        };
+
+        async function initPricing() {
+            const priceElements = document.querySelectorAll('.dynamic-price');
+            const hardwareLocText = document.getElementById('hardware-location-text');
+            
+            // Loading state
+            priceElements.forEach(el => el.innerHTML = '<span class="price-loader"></span>');
+
+            try {
+                // Fetch Geo IP Data
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                
+                const userCurrency = data.currency || 'USD';
+                const userCountry = data.country_name || 'Global';
+                const conversion = currencyMap[userCurrency] || currencyMap['USD'];
+
+                if(hardwareLocText) hardwareLocText.innerText = `Prices converted for ${userCountry}`;
+
+                // Update all prices
+                priceElements.forEach(el => {
+                    const baseUSD = parseFloat(el.getAttribute('data-base-price'));
+                    let localPrice = baseUSD * conversion.rate;
+
+                    // Rounding logic: 
+                    // If NGN/KES (high numbers), round to nearest 100
+                    // If USD/EUR (low numbers), keep flexible
+                    if(conversion.rate > 50) {
+                        localPrice = Math.ceil(localPrice / 100) * 100;
+                    } else {
+                        localPrice = Math.ceil(localPrice);
+                    }
+
+                    el.innerText = new Intl.NumberFormat(conversion.locale, {
+                        style: 'currency',
+                        currency: userCurrency,
+                        maximumFractionDigits: 0
+                    }).format(localPrice);
+                });
+
+            } catch (err) {
+                console.warn('Currency detection failed, defaulting to USD', err);
+                priceElements.forEach(el => el.innerText = '₦' + el.getAttribute('data-base-price'));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPricing);
+
     </script>
 </body>
 </html>
